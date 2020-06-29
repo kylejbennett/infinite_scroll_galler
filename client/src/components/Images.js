@@ -11,10 +11,7 @@ export class Images extends Component {
     };
 
     componentDidMount() {
-        const { count, start } = this.state;
-        axios
-            .get(`/api/photos?count=${count}&start=${start}`)
-            .then(res => this.setState({ images: res.data }));
+        this.fetchImages();
     };
 
     fetchImages = () => {
@@ -22,7 +19,17 @@ export class Images extends Component {
         this.setState({ start: this.state.start + count });
         axios
             .get(`/api/photos?count=${count}&start=${start}`)
-            .then(res => this.setState({ images: this.state.images.concat(res.data )}));
+            .then(res => {
+                let newImages = res.data;
+                for(var i=0; i<newImages.length; i++){
+                    for(var x=0; x<this.state.images.length; x++){
+                        if(newImages[i].id === this.state.images[x].id){
+                            newImages.splice(i, 1);
+                        }
+                    }
+                }
+                this.setState({ images: this.state.images.concat(newImages)})
+            });
     };
 
     render(){
